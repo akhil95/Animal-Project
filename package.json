@@ -1,0 +1,21 @@
+{
+  "name": "assignment-code",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage=true"
+  },
+  "author": "akhil",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.14.11",
+    "aws-sdk-mock": "^6.0.4",
+    "jest": "^29.7.0",
+    "serverless-appsync-plugin": "^1.6.0"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1659.0",
+    "csv-parser": "^3.0.0"
+  }
+}

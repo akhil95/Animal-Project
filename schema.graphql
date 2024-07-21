@@ -1,0 +1,22 @@
+type Animal {
+  animal_name: String
+  class_type: String
+  class_number: String
+}
+
+type AnimalClassSummary {
+  class_number: String
+  class_type: String
+  number_of_animals: Int
+}
+
+input TraitFilter {
+  trait: String
+  class_type: String
+  class_number: String
+}
+
+type Query {
+  getAnimalClassSummary: [AnimalClassSummary]
+  getAnimalByTrait(filter: TraitFilter): [Animal]
+}

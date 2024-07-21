@@ -1,0 +1,69 @@
+service: animal-graphql-service
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: us-east-1
+
+functions:
+  s3todynamo:
+    handler: src/index.s3todynamo
+    events:
+      - s3:
+          bucket: myanimalbucket-graphql
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .csv
+    #name: S3toDynamoLambda
+  graphqlHandler:
+    handler: src/index.AppsyncToLambda
+    name: AppsyncToLambda
+
+custom:
+  appSync:
+    name: AnimalApiGraphql
+    authenticationType: API_KEY
+    dataSources:
+      - type: AWS_LAMBDA
+        name: AppsyncToLambdaDataSource
+        config:
+          functionName: graphqlHandler
+    mappingTemplates:
+      - dataSource: AppsyncToLambdaDataSource
+        type: Query
+        field: getAnimalByTrait
+        request: "request.vtl"
+        response: "response.vtl"
+      - dataSource: AppsyncToLambdaDataSource
+        type: Query
+        field: getAnimalClassSummary
+        request: "request.vtl"
+        response: "response.vtl"
+
+resources:
+  Resources:
+    AnimalDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: AnimalsTable
+        AttributeDefinitions:
+          - AttributeName: animal_name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: animal_name
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+
+plugins:
+  - serverless-appsync-plugin
+
+package:
+  exclude:
+    - node_modules/**
+    - .gitignore
+    - .git/**
+    - README.md
+  include:
+    - node_modules/csv-parser/**
